@@ -39,7 +39,8 @@ Tables:
 - `tickets` (subject, body, customer, order ref, created_at)
 - `agent_runs` (ticket, model, tokens, cost_usd, latency_ms, trace jsonb)
 - `decisions` (run, intent, confidence, action, reasons[])
-- `drafts` (ticket, body, status: pending / approved / rejected / auto_sent, reviewer_note, `flagged_at`, `flag_note`). The flag fields record a post-hoc audit saying an auto-sent reply was wrong.
+- `drafts` (ticket, run, body, status: pending / approved / rejected / auto_sent / superseded, reviewer_note, `flagged_at`, `flag_note`). The flag fields record a post-hoc audit saying an auto-sent reply was wrong. Processing a ticket again supersedes its older pending drafts and discards their staged changes; a ticket whose reply already went out can't be processed again.
+- Ticket status (new / awaiting_review / escalated / resolved / rejected) is derived from the latest run, never stored.
 - `address_changes` (order, new_address, status: staged / applied / discarded): staged by the agent, applied only on send
 - `reprint_proposals` (order, reason, status: pending / approved / rejected)
 - `settings`: a **single row** (`auto_send_enabled`, `threshold` default 0.85, `policy_limit_cents`, `disabled_reason`)
@@ -71,7 +72,7 @@ Ticket intents: `order_status`, `proof_status`, `address_change`, `reprint_defec
 
 ## Data and evals
 
-- `seed/tickets.json`: ~60 realistic tickets with ground-truth labels: `{ intent, expectedAction, requiredFacts[] }`. Spread them across the intents, and include tricky ones: wrong order number, two intents in one ticket (labeled with the multi-intent rule), sarcasm, a non-English ticket, a refund disguised as a question. Generate them once with an LLM, then **I review and fix the labels by hand** and commit the result.
+- `packages/pod/seed/tickets.json`: ~60 realistic tickets with ground-truth labels: `{ intent, expectedAction, requiredFacts[] }`. Spread them across the intents, and include tricky ones: wrong order number, two intents in one ticket (labeled with the multi-intent rule), sarcasm, a non-English ticket, a refund disguised as a question. Generate them once with an LLM, then **I review and fix the labels by hand** and commit the result.
 - Seed the orders, shipments and proofs that the tickets refer to, including at least one order above `policy_limit_cents`.
 - `pnpm eval --model <claude|openai|grok|mock> [--limit n]` runs every ticket through agent + gate and reports:
   - **wrong-auto-send rate**: auto-sent when the label wasn't auto_send, or when required facts were missing. This is THE metric.
