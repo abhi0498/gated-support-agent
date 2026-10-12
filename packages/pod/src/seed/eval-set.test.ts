@@ -33,6 +33,12 @@ function orderFor(t: EvalTicket): SeedOrder | undefined {
 }
 
 describe("eval set integrity", () => {
+  it("gives every seeded customer a distinct email", () => {
+    // Emails are derived from names, so two customers with one name would silently merge.
+    const emails = SEED_ORDERS.map((o) => o.customer.email);
+    expect(new Set(emails).size).toBe(emails.length);
+  });
+
   it("parses, and every ref is unique", () => {
     const refs = evalSet.map((t) => t.ref);
     expect(new Set(refs).size).toBe(refs.length);

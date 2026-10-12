@@ -1,5 +1,5 @@
 {
-  "id": "1ba54246-de27-4ebc-82c8-537b5abb16fb",
+  "id": "2fbfc546-d0fd-4673-ac7c-3237fecfb426",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -104,7 +104,16 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "agent_runs_id_ticketId_unique": {
+          "name": "agent_runs_id_ticketId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "ticket_id"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
@@ -304,15 +313,17 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "drafts_run_id_agent_runs_id_fk": {
-          "name": "drafts_run_id_agent_runs_id_fk",
+        "drafts_run_id_ticket_id_agent_runs_id_ticket_id_fk": {
+          "name": "drafts_run_id_ticket_id_agent_runs_id_ticket_id_fk",
           "tableFrom": "drafts",
           "tableTo": "agent_runs",
           "columnsFrom": [
-            "run_id"
+            "run_id",
+            "ticket_id"
           ],
           "columnsTo": [
-            "id"
+            "id",
+            "ticket_id"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"

@@ -5,6 +5,7 @@ import {
   boolean,
   check,
   doublePrecision,
+  foreignKey,
   index,
   integer,
   jsonb,
@@ -13,6 +14,7 @@ import {
   pgTable,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
@@ -63,7 +65,8 @@ export const agentRuns = pgTable(
     startedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
     finishedAt: timestamp({ withTimezone: true }),
   },
-  (t) => [index().on(t.ticketId)],
+  // (id, ticket_id) is unique so drafts can reference both together.
+  (t) => [index().on(t.ticketId), unique().on(t.id, t.ticketId)],
 );
 
 // The gate's Decision, next to the Verdict fields it was based on.
@@ -96,10 +99,7 @@ export const drafts = pgTable(
     ticketId: uuid()
       .notNull()
       .references(() => tickets.id),
-    runId: uuid()
-      .notNull()
-      .unique()
-      .references(() => agentRuns.id),
+    runId: uuid().notNull().unique(),
     body: text().notNull(),
     status: draftStatus().notNull().default("pending"),
     reviewerNote: text(),
@@ -108,6 +108,12 @@ export const drafts = pgTable(
     createdAt: timestamp({ withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
+    // The draft's ticket must be its run's ticket, or the pending-draft rule below
+    // would guard the wrong ticket.
+    foreignKey({
+      columns: [t.runId, t.ticketId],
+      foreignColumns: [agentRuns.id, agentRuns.ticketId],
+    }),
     // At most one pending draft per ticket: a new run must supersede the old one.
     uniqueIndex("drafts_one_pending_per_ticket")
       .on(t.ticketId)

@@ -59,6 +59,20 @@ describe("core schema constraints", () => {
     await db.insert(drafts).values({ ticketId: ticket.id, runId: run2.id, body: "two" });
   });
 
+  it("rejects a draft whose ticket isn't its run's ticket", async () => {
+    const { insertRun } = await newRun();
+    const run = await insertRun();
+    const [other] = await db
+      .insert(tickets)
+      .values({ ref: "T-002", subject: "s", body: "b", customerEmail: "c@d.test" })
+      .returning();
+    if (!other) throw new Error("ticket not inserted");
+
+    await expect(
+      db.insert(drafts).values({ ticketId: other.id, runId: run.id, body: "x" }),
+    ).rejects.toThrow();
+  });
+
   it("only lets auto-sent drafts be flagged", async () => {
     const { ticket, insertRun } = await newRun();
     const run = await insertRun();

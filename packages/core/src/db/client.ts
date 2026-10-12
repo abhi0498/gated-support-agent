@@ -23,7 +23,7 @@ export async function resetDb(url: string, migrationsFolder: string): Promise<vo
   const db = createDb(url);
   try {
     await db.execute(sql`drop schema if exists drizzle cascade`);
-    await db.execute(sql`drop schema public cascade`);
+    await db.execute(sql`drop schema if exists public cascade`);
     await db.execute(sql`create schema public`);
   } finally {
     await db.$client.end();

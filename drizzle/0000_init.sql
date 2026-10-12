@@ -14,7 +14,8 @@ CREATE TABLE "agent_runs" (
 	"latency_ms" integer,
 	"trace" jsonb,
 	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"finished_at" timestamp with time zone
+	"finished_at" timestamp with time zone,
+	CONSTRAINT "agent_runs_id_ticketId_unique" UNIQUE("id","ticket_id")
 );
 --> statement-breakpoint
 CREATE TABLE "decisions" (
@@ -131,7 +132,7 @@ CREATE TABLE "shipments" (
 ALTER TABLE "agent_runs" ADD CONSTRAINT "agent_runs_ticket_id_tickets_id_fk" FOREIGN KEY ("ticket_id") REFERENCES "public"."tickets"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "decisions" ADD CONSTRAINT "decisions_run_id_agent_runs_id_fk" FOREIGN KEY ("run_id") REFERENCES "public"."agent_runs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "drafts" ADD CONSTRAINT "drafts_ticket_id_tickets_id_fk" FOREIGN KEY ("ticket_id") REFERENCES "public"."tickets"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "drafts" ADD CONSTRAINT "drafts_run_id_agent_runs_id_fk" FOREIGN KEY ("run_id") REFERENCES "public"."agent_runs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "drafts" ADD CONSTRAINT "drafts_run_id_ticket_id_agent_runs_id_ticket_id_fk" FOREIGN KEY ("run_id","ticket_id") REFERENCES "public"."agent_runs"("id","ticket_id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "address_changes" ADD CONSTRAINT "address_changes_order_id_orders_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."orders"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "address_changes" ADD CONSTRAINT "address_changes_run_id_agent_runs_id_fk" FOREIGN KEY ("run_id") REFERENCES "public"."agent_runs"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "orders" ADD CONSTRAINT "orders_customer_id_customers_id_fk" FOREIGN KEY ("customer_id") REFERENCES "public"."customers"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

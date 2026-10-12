@@ -3,6 +3,8 @@ import { createTestDb, truncate } from "@gsa/core/testing";
 import { count, eq } from "drizzle-orm";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { customers, orders, proofs, shipments } from "../db/schema.js";
+import { SEED_ORDERS, SEED_PROOFS, SEED_SHIPMENTS } from "../../seed/store.js";
+import { loadEvalSet } from "./eval-set.js";
 import { seedDatabase } from "./seed.js";
 
 describe("seedDatabase", () => {
@@ -30,7 +32,14 @@ describe("seedDatabase", () => {
     const first = await counts();
     await seedDatabase(db);
     expect(await counts()).toEqual(first);
-    expect(first).toEqual([52, 52, 28, 9, 60, 1]);
+    expect(first).toEqual([
+      new Set(SEED_ORDERS.map((o) => o.customer.email)).size,
+      SEED_ORDERS.length,
+      SEED_SHIPMENTS.length,
+      SEED_PROOFS.length,
+      loadEvalSet().length,
+      1,
+    ]);
   });
 
   it("restores seeded rows that were changed", async () => {
