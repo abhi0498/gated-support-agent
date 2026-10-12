@@ -68,7 +68,11 @@ _Avoid_: Reprint request
 
 **Label**:
 The hand-checked ground truth for a seeded ticket: its intent, expected action and required facts. Labels exist only in the eval set, never where the agent can see them.
-_Avoid_: Annotation, tag, expected output
+_Avoid_: Annotation, expected output
+
+**Ticket tag**:
+A reason a seeded ticket is in the eval set (sarcasm, a wrong order reference, a prompt injection), used to break eval results down by kind of difficulty. Not part of the label.
+_Avoid_: Category, flag
 
 **Intent**:
 The single category a ticket is assigned, chosen as the most severe one present when a ticket mixes several.

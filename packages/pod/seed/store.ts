@@ -31,6 +31,8 @@ export interface SeedProof {
   updatedAt: string;
 }
 
+const orderNumber = (n: number) => `PD-${String(n)}`;
+
 function us(line1: string, city: string, region: string, postalCode: string): Address {
   return { line1, city, region, postalCode, country: "US" };
 }
@@ -50,7 +52,7 @@ function order(
     .replace(/[^a-z ]/g, "")
     .replace(/ /g, ".")}@example.test`;
   return {
-    number: `PD-${String(n)}`,
+    number: orderNumber(n),
     customer: { email, name },
     status,
     totalCents,
@@ -127,7 +129,7 @@ function ship(n: number, trackingNumber: string, eta: string, shippedOn: string)
       ? "SwiftPost"
       : "Northline";
   return {
-    orderNumber: `PD-${String(n)}`,
+    orderNumber: orderNumber(n),
     carrier,
     trackingNumber,
     eta,
@@ -167,7 +169,7 @@ export const SEED_SHIPMENTS: SeedShipment[] = [
 ];
 
 function proof(n: number, status: SeedProof["status"], updatedOn: string): SeedProof {
-  return { orderNumber: `PD-${String(n)}`, status, updatedAt: `${updatedOn}T12:00:00Z` };
+  return { orderNumber: orderNumber(n), status, updatedAt: `${updatedOn}T12:00:00Z` };
 }
 
 export const SEED_PROOFS: SeedProof[] = [

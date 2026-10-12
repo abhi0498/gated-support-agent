@@ -27,14 +27,14 @@ export const draftStatus = pgEnum("draft_status", [
   "superseded",
 ]);
 
-/** A value from a tool result that the reply relies on (e.g. a tracking number). */
+/** A value from a tool result that the reply relies on. */
 export interface CitedFact {
   name: string;
   value: string;
 }
 
 // The customer's words as received. Email and order ref are unverified text,
-// not foreign keys: a wrong order number must still be storable.
+// not foreign keys: a ref that matches nothing must still be storable.
 export const tickets = pgTable("tickets", {
   id: uuid().primaryKey().defaultRandom(),
   ref: text().notNull().unique(),

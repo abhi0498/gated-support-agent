@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./eval-set": "./src/seed/eval-set.ts",
+    "./seed": "./src/seed/seed.ts"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json"
