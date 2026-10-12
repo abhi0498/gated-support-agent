@@ -10,6 +10,8 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@gsa/core": "workspace:*"
+    "@gsa/core": "workspace:*",
+    "drizzle-orm": "^0.45.4",
+    "zod": "^4.6.6"
   }
 }
